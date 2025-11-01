@@ -4,7 +4,7 @@ import Footer from "home/Footer";
 import "home/styles";
 import "./index.css";
 
-import CartContent from "./Components/CartContent";
+import CartContent from "./components/CartContent";
 
 const App = () => (
   <div>

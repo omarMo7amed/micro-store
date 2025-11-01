@@ -1,0 +1,78 @@
+graph TB
+    %% Backend Layer
+    subgraph Backend["🔧 BACKEND LAYER"]
+        Server["<b>Server API</b><br/>━━━━━━━━━<br/>Port: 8000<br/>Framework: NestJS<br/>━━━━━━━━━<br/>• Auth Middleware<br/>• Cookie Validation<br/>• REST API"]
+    end
+
+    %% Frontend Layer
+    subgraph Frontend["🌐 MICRO FRONTEND LAYER"]
+        direction TB
+        
+        subgraph Row1["Host Application"]
+            Home["<b>HOME</b><br/>━━━━━━━━━<br/>Port: 3000<br/>━━━━━━━━━<br/><b>EXPOSES:</b><br/>• Header<br/>• Footer<br/>• Products<br/>• EventBus<br/>• Styles"]
+        end
+        
+        subgraph Row2["Remote Applications"]
+            PDP["<b>PDP</b><br/>━━━━━━━━━<br/>Port: 3001<br/>━━━━━━━━━<br/><b>CONSUMES:</b><br/>• Home Components"]
+            
+            Cart["<b>CART</b><br/>━━━━━━━━━<br/>Port: 3002<br/>━━━━━━━━━<br/><b>EXPOSES:</b><br/>• MiniCart<br/>• Styles"]
+            
+            Login["<b>LOGIN</b><br/>━━━━━━━━━<br/>Port: 3005<br/>━━━━━━━━━<br/><b>EXPOSES:</b><br/>• Auth Hook<br/>• Shared State<br/>• RxJS Observables"]
+        end
+    end
+
+    %% Communication Layer
+    subgraph Communication["📡 COMMUNICATION LAYER"]
+        direction LR
+        
+        EB["<b>EventBus</b><br/>━━━━━━━━━<br/>Scope: Same Tab<br/>━━━━━━━━━<br/>• Cart Events<br/>• Product Events<br/>• UI Sync"]
+        
+        BC["<b>BroadcastChannel</b><br/>━━━━━━━━━<br/>Scope: Cross Tab<br/>━━━━━━━━━<br/>• Auth Sync<br/>• Cart Persistence<br/>• State Sync"]
+        
+        RX["<b>RxJS</b><br/>━━━━━━━━━<br/>Scope: Reactive<br/>━━━━━━━━━<br/>• Auth State<br/>• Observables<br/>• Side Effects"]
+    end
+
+    %% Shared Layer
+    subgraph Shared["📦 SHARED DEPENDENCIES"]
+        Deps["<b>Singleton Modules</b><br/>━━━━━━━━━<br/>• React<br/>• React-DOM<br/>• RxJS"]
+    end
+
+    %% Key Connections Only
+    
+    %% Backend to Frontend (API Calls)
+    Server -.->|API| Home
+    Server -.->|API| Cart
+    Server -.->|API| Login
+
+    %% Module Federation (Most Important)
+    Home <-->|Module Federation| Cart
+    Home <-->|Module Federation| Login
+    Home -->|Module Federation| PDP
+
+    %% Communication Channels (Representative)
+    Home --- EB
+    Cart --- EB
+    
+    Home --- BC
+    Login --- BC
+    
+    Login -->|Publishes| RX
+    Home -.->|Subscribes| RX
+
+    %% Shared Dependencies (Single Reference)
+    Frontend -.->|Uses| Deps
+
+    %% Styling
+    classDef backendStyle fill:#1565C0,stroke:#0D47A1,stroke-width:3px,color:#fff
+    classDef hostStyle fill:#2E7D32,stroke:#1B5E20,stroke-width:3px,color:#fff
+    classDef remoteStyle fill:#F57C00,stroke:#E65100,stroke-width:3px,color:#fff
+    classDef commStyle fill:#6A1B9A,stroke:#4A148C,stroke-width:3px,color:#fff
+    classDef sharedStyle fill:#00695C,stroke:#004D40,stroke-width:3px,color:#fff
+    classDef layerStyle fill:#F5F5F5,stroke:#9E9E9E,stroke-width:2px,stroke-dasharray: 5 5
+    
+    class Server backendStyle
+    class Home hostStyle
+    class PDP,Cart,Login remoteStyle
+    class EB,BC,RX commStyle
+    class Deps sharedStyle
+    class Backend,Frontend,Communication,Shared layerStyle

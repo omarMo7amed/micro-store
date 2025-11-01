@@ -38,15 +38,6 @@ export const products: Product[] = [
       'This budget-friendly fidget spinner is perfect for kids and adults alike. Lightweight and easy to carry.',
   },
   {
-    id: 4,
-    name: 'Fidget Spinner 4',
-    price: 14.99,
-    description: 'A glow-in-the-dark fidget spinner.',
-    imageUrl: 'http://localhost:8000/fidget-4.jpg',
-    longDescription:
-      'This fidget spinner glows in the dark, making it fun to use at night or in low-light conditions.',
-  },
-  {
     id: 5,
     name: 'Fidget Spinner 5',
     price: 19.99,

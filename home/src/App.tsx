@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Home from "./Home";
+import Home from "./components/Home";
 
 const App = () => (
   <>

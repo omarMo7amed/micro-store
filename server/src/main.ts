@@ -1,11 +1,20 @@
+// main.ts in your NestJS application
 import { NestFactory } from '@nestjs/core';
-
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+
+  app.enableCors({
+    origin: [
+      'http://localhost:3005',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+    ],
+    credentials: true,
+  });
+
   await app.listen(8000);
 }
-
 bootstrap();

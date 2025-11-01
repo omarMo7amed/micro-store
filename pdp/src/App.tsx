@@ -3,8 +3,8 @@ import Header from "home/Header";
 import Footer from "home/Footer";
 import "./index.css";
 import "home/styles";
-import ProductContent from "./ProductContent";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router";
+import ProductContent from "./components/ProductContent";
 
 const App = function () {
   return (

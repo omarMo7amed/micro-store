@@ -4,10 +4,8 @@ export const mfConfig = {
   filename: "remoteEntry.js",
 
   remotes: {
-    home: "home@http://localhost:3000/remoteEntry.js",
-    pdp: "pdp@http://localhost:3001/remoteEntry.js",
     cart: "cart@http://localhost:3002/remoteEntry.js",
-    login: "login@http://localhost:3003/remoteEntry.js",
+    x: "login@http://localhost:3005/remoteEntry.js",
   },
 
   exposes: {
@@ -15,10 +13,12 @@ export const mfConfig = {
     "./products": "./src/products.ts",
     "./Footer": "./src/components/Footer.tsx",
     "./styles": "./src/index.css",
+    "./eventBus": "./src/eventBus.ts",
   },
 
   shared: {
-    react: { singleton: true, requiredVersion: undefined },
-    "react-dom": { singleton: true, requiredVersion: undefined },
+    react: { singleton: true },
+    "react-dom": { singleton: true },
+    rxjs: { singleton: true, eager: true },
   },
 };

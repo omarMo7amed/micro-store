@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
-import { jwt } from "login/auth";
 const API_SERVER = "http://localhost:8000";
 
 export const cart = new BehaviorSubject(null);
 
-export const getCart = async () => {
+export const getCart = async (jwt: any) => {
   const response = await fetch(`${API_SERVER}/cart`, {
     method: "GET",
     headers: {
@@ -23,7 +22,7 @@ export const getCart = async () => {
   return data;
 };
 
-export const addToCart = async (id: number) => {
+export const addToCart = async (id: number, jwt: any) => {
   const response = await fetch(`${API_SERVER}/cart`, {
     method: "POST",
     headers: {
@@ -42,9 +41,9 @@ export const addToCart = async (id: number) => {
   return data;
 };
 
-export const clearCart = async () => {
+export const clearCart = async (jwt: any) => {
   const response = await fetch(`${API_SERVER}/cart`, {
-    method: "POST",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Autherization: `Bearer ${jwt.value}`,
