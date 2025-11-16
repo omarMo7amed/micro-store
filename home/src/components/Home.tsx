@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../products";
+import { addToCart } from "cart/cart";
 
 type Product = {
   id: number;
@@ -7,14 +8,17 @@ type Product = {
   price: number;
   description: string;
   imageUrl: string;
-  offer?: string;
 };
 
 export default function Home() {
-  const [products, setProducts] = useState<Array<any>>([]);
+  const [products, setProducts] = useState<Array<Product>>([]);
 
   useEffect(() => {
-    const fetchProducts = async () => setProducts(await getProducts());
+    const fetchProducts = async () => {
+      const data = await getProducts();
+      setProducts(data);
+    };
+
     fetchProducts();
   }, []);
 
@@ -39,7 +43,7 @@ export default function Home() {
           padding: "20px",
         }}
       >
-        {products.map((product: Product) => (
+        {products.map((product) => (
           <div
             key={product.id}
             style={{
@@ -52,32 +56,44 @@ export default function Home() {
               backgroundColor: "#fff",
             }}
           >
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              style={{
-                width: "100%",
-                height: "150px",
-                objectFit: "cover",
-                borderRadius: "10px 10px 0 0",
-              }}
-            />
+            <a href={`/product/${product.id}`}>
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                style={{
+                  cursor: "pointer",
+                  width: "100%",
+                  height: "150px",
+                  objectFit: "cover",
+                  borderRadius: "10px 10px 0 0",
+                }}
+              />
+            </a>
             <h2 style={{ fontSize: "1.5rem", color: "#555", margin: "10px 0" }}>
               {product.name}
             </h2>
             <p style={{ fontSize: "1rem", color: "#777", margin: "10px 0" }}>
               {product.description}
             </p>
-            {product.offer && (
-              <p
-                style={{ fontSize: "1rem", color: "#d32f2f", margin: "10px 0" }}
-              >
-                Special Offer: {product.offer}
-              </p>
-            )}
             <strong style={{ fontSize: "1.2rem", color: "#000" }}>
               ${product.price}
             </strong>
+            <button
+              onClick={async () => await addToCart(product.id)}
+              style={{
+                marginTop: "15px",
+                marginLeft: "15px",
+                padding: "10px 20px",
+                backgroundColor: "#007BFF",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontSize: "1rem",
+              }}
+            >
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>

@@ -2,23 +2,15 @@
 export const authChannel = new BroadcastChannel("auth-channel");
 
 // Notify other micro frontends about login/logout
-export const notifyAuthChange = (event: any, data = null) => {
-  console.log("Notifying auth change:", event, data);
+export const notifyAuthChange = (event: any, data: any) => {
   authChannel.postMessage({ event, data });
+  console.log("Notified auth change:", { event, data });
 };
 
 // Listen for auth changes
 export const listenAuthChange = (callback: any) => {
   authChannel.onmessage = (message) => {
+    console.log("Received auth change message:", message.data);
     callback(message.data);
   };
-};
-
-// Get user state from the cookie
-export const getUserState = () => {
-  const cookies = document.cookie.split("; ");
-  const jwtCookie = cookies.find((row) => row.startsWith("jwt="));
-  console.log("Cookies:", cookies); // Debugging output
-  console.log("JWT Cookie:", jwtCookie); // Debugging output
-  return jwtCookie ? jwtCookie.split("=")[1] : null;
 };

@@ -1,33 +1,16 @@
 import { ShoppingCart, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth, logout } from "x/auth";
-import { listenAuthChange, getUserState } from "x/sharedState";
 import MiniCart from "cart/MiniCart";
 
 export default function Header() {
   const [openCart, setOpenCart] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(useAuth());
-
-  useEffect(() => {
-    const handleAuthChange = ({ event }: { event: any }) => {
-      if (event === "login" || event === "logout") {
-        setLoggedIn(useAuth());
-      }
-    };
-
-    console.log("Setting up auth listener", getUserState());
-
-    listenAuthChange(handleAuthChange);
-
-    return () => {
-      listenAuthChange(null);
-    };
-  }, []);
+  const loggedIn = useAuth();
 
   const handleLogout = async () => {
     try {
       await logout();
-      window.location.reload();
+      window.location.href = "http://localhost:3005/login";
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -45,20 +28,20 @@ export default function Header() {
         <nav className="flex items-center space-x-6">
           <ul className="flex space-x-6">
             <li>
-              <button
-                onClick={() => (window.location.href = "http://localhost:3000")}
+              <a
+                href="/"
                 className="text-gray-900 hover:text-amber-800 transition-colors duration-200"
               >
                 Home
-              </button>
+              </a>
             </li>
             <li>
-              <button
-                onClick={() => (window.location.href = "http://localhost:3002")}
+              <a
+                href="/cart"
                 className="text-gray-900 hover:text-amber-800 transition-colors duration-200"
               >
                 Cart
-              </button>
+              </a>
             </li>
           </ul>
 

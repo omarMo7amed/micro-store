@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import { getProductById, currencyFormatter } from "home/products";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 type Product = {
   id: number;
@@ -17,7 +17,6 @@ type Product = {
   price: number;
   description: string;
   imageUrl: string;
-  offer?: string;
 };
 
 export default function ProductContent() {
@@ -28,8 +27,10 @@ export default function ProductContent() {
   const productId = params.id ? parseInt(params.id) : 0;
 
   useEffect(() => {
-    const fetchProduct = async () =>
+    const fetchProduct = async () => {
       setProduct(await getProductById(productId));
+      document.title = product ? product.name : "Product Details";
+    };
     fetchProduct();
   }, []);
 
@@ -62,11 +63,6 @@ export default function ProductContent() {
                   alt={product.name}
                   className="max-w-md object-cover"
                 />
-                {product.offer && (
-                  <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {product.offer}
-                  </div>
-                )}
               </div>
               <div className="flex gap-2">
                 {images.map((img, idx) => (

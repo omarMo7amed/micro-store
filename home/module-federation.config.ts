@@ -10,10 +10,10 @@ export const mfConfig = {
 
   exposes: {
     "./Header": "./src/components/Header.tsx",
-    "./products": "./src/products.ts",
     "./Footer": "./src/components/Footer.tsx",
+    "./Home": "./src/components/Layout.tsx",
+    "./products": "./src/products.ts",
     "./styles": "./src/index.css",
-    "./eventBus": "./src/eventBus.ts",
   },
 
   shared: {

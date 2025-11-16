@@ -1,25 +1,25 @@
 import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
-import { login } from "../hooks/auth"; // Assuming `login` sends the login request
-import { notifyAuthChange } from "../shared/utils/auth"; // Import the shared auth utility
+import { login, useAuth } from "../hooks/auth";
+import { notifyAuthChange } from "../shared/utils/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [email, setEmail] = useState("sally");
+  const [email, setEmail] = useState("omar");
   const [password, setPassword] = useState("123");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const isLoggedIn = useAuth();
+
+  if (isLoggedIn) navigate("/");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Call the login function to authenticate the user
-      // await login(email, password);
       const token = await login(email, password);
 
-      // Notify other micro frontends about the login event
       notifyAuthChange("login", token);
-
-      // Redirect to the Home micro frontend
-      window.location.href = "http://localhost:3000/";
+      navigate("/");
     } catch {
       alert("Login failed");
     }

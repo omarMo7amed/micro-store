@@ -5,9 +5,10 @@ export const mfConfig = {
   remotes: {
     home: "home@http://localhost:3000/remoteEntry.js",
   },
-  exposes: {},
+  exposes: { "./Product": "./src/components/ProductContent" },
   shared: {
-    react: { singleton: true, requiredVersion: undefined },
-    "react-dom": { singleton: true, requiredVersion: undefined },
+    react: { singleton: true },
+    "react-dom": { singleton: true },
+    rxjs: { singleton: true, eager: true },
   },
 };

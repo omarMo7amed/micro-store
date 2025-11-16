@@ -1,68 +1,68 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Post,
   Request,
   UseGuards,
+  Post,
+  Body,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { Product, products } from 'src/products';
+
+import products, { Product } from '../../products';
 
 interface CartItem extends Product {
   quantity: number;
 }
 
 interface Cart {
-  items: CartItem[];
+  cartItems: CartItem[];
 }
 
-const initializeCart = (indexes: number[]): Cart => {
-  return {
-    items: indexes.map((index) => ({ ...products[index], quantity: 1 })),
-  };
-};
+const initialCart = (indexes: number[]): Cart => ({
+  cartItems: indexes.map((index) => ({
+    ...products[index],
+    quantity: 1,
+  })),
+});
 
 @Controller('cart')
 export class CartController {
   private carts: Record<number, Cart> = {
-    1: initializeCart([0, 2]),
-    2: initializeCart([1, 3]),
+    1: initialCart([0, 2, 4]),
+    2: initialCart([1, 3]),
   };
+
   constructor() {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
   async index(@Request() req): Promise<Cart> {
-    return this.carts[req.user.userId] ?? { items: [] };
+    return this.carts[req.user.userId] ?? { cartItems: [] };
   }
 
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(@Request() req, @Body() { id }: { id: string }): Promise<Cart> {
-    const userId = req.user.userId;
-    if (!this.carts[userId]) {
-      this.carts[userId] = { items: [] };
+    const cart = this.carts[req.user.userId];
+    const cartItem = cart.cartItems.find(
+      (cartItem) => cartItem.id === parseInt(id),
+    );
+    if (cartItem) {
+      cartItem.quantity += 1;
+    } else {
+      cart.cartItems.push({
+        ...products.find((product) => product.id === parseInt(id)),
+        quantity: 1,
+      });
     }
-    const product = products.find((p) => p.id === parseInt(id));
-    if (product) {
-      const cart = this.carts[userId];
-      const existingItem = cart.items.find((item) => item.id === product.id);
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.items.push({ ...product, quantity: 1 });
-      }
-    }
-    return this.carts[userId];
+    return cart;
   }
 
   @Delete()
   @UseGuards(JwtAuthGuard)
-  async remove(@Request() req): Promise<Cart> {
-    const userId = req.user.userId;
-    this.carts[userId] = { items: [] };
-    return this.carts[userId];
+  async destroy(@Request() req): Promise<Cart> {
+    this.carts[req.user.userId] = { cartItems: [] };
+    return this.carts[req.user.userId];
   }
 }

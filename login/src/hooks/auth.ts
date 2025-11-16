@@ -1,62 +1,72 @@
-// login/src/hooks/auth.ts
 import { useEffect, useState } from "react";
-import { publish } from "home/eventBus";
+import { BehaviorSubject } from "rxjs";
+
 const API_SERVER = "http://localhost:8000";
+
+export const jwt = new BehaviorSubject<string | null>(
+  localStorage.getItem("jwt")
+);
+
+export const auth$ = jwt.asObservable();
+
+export const authChannel = new BroadcastChannel("auth-channel");
+
+export const notifyAuthChange = (event: string, data: any) => {
+  console.log("Broadcasting auth change:", event, data);
+  authChannel.postMessage({ event, data });
+};
+
+authChannel.onmessage = (message) => {
+  const { event, data } = message.data;
+  console.log("Received auth broadcast:", event, data);
+
+  if (event === "login" && data) {
+    jwt.next(data);
+    localStorage.setItem("jwt", data);
+  }
+
+  if (event === "logout") {
+    jwt.next(null);
+    localStorage.removeItem("jwt");
+  }
+};
 
 export const login = async (username: string, password: string) => {
   const response = await fetch(`${API_SERVER}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
-    credentials: "include", // Ensure cookies are included
   });
 
   if (!response.ok) throw new Error("Login failed");
 
   const data = await response.json();
-  const token = data.access_token; // Now this will not be undefined
+  const token = data.access_token;
 
-  // ✅ Publish the token globally
-  publish("auth:login", token);
+  jwt.next(token);
 
-  // Optional: persist in localStorage for reloads
   localStorage.setItem("jwt", token);
+
+  notifyAuthChange("login", token);
 
   return token;
 };
 
 export const logout = () => {
+  jwt.next(null);
   localStorage.removeItem("jwt");
-  publish("auth:logout", null);
+
+  // Broadcast to other apps/tabs
+  notifyAuthChange("logout", null);
 };
 
-// Hook that reads login state from localStorage and reacts to events
-// ... (login and logout functions are fine) ...
-
-// Hook that reads login state from localStorage and reacts to events
 export function useAuth() {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("jwt")
-  );
-
-  console.log("useAuth token:", token);
+  const [token, setToken] = useState<string | null>(jwt.value);
 
   useEffect(() => {
-    // ✅ Define the listener function so it can be referenced
-    const handleAuthEvents = (e: any) => {
-      const { topic, data } = e.detail;
-      if (topic === "auth:login") setToken(data);
-      if (topic === "auth:logout") setToken(null);
-    };
+    const sub = auth$.subscribe((value) => setToken(value));
+    return () => sub.unsubscribe();
+  }, []);
 
-    // ✅ Add the specific listener
-    window.addEventListener("pubsub", handleAuthEvents);
-
-    // ✅ Return a cleanup function that removes the *exact same* listener
-    return () => {
-      window.removeEventListener("pubsub", handleAuthEvents);
-    };
-  }, []); // Empty dependency array is correct
-
-  return !!token; // Returns true if logged in, false if not
+  return !!token;
 }
