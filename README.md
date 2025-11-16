@@ -22,7 +22,7 @@ Backend server handling API requests and authentication.
 
 **TODO: Authentication Middleware**
 
-- Create a NestJS middleware to check authentication cookies
+- Create a NestJS middleware to check authentication cookies (i didn't implement it)
 - Return authentication status (`{ isAuth: boolean }`)
 - Protect routes based on authentication state
 
@@ -272,9 +272,11 @@ I transformed the **Login micro frontend** into an SPA host that:
 ```javascript
 // In Login micro frontend (SPA Host)
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomeApp from "home/Home";
-import ProductApp from "pdp/Product";
-import CartApp from "cart/Cart";
+import Home from "home/Home";
+import Product from "pdp/Product";
+import Cart from "cart/Cart";
+import Login from "./components/Login";
+import RequireAuth from "./components/RequireAuth";
 
 function App() {
   return (
